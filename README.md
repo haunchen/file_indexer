@@ -74,6 +74,36 @@ pip install requests
 本專案使用 GitHub Actions 自動構建和部署：
 
 1. 每次推送到 `main` 分支時自動運行測試
+2. 測試通過後自動部署到目標伺服器
+
+### 部署設定
+
+要啟用自動部署功能，需在 GitHub 專案設定中新增以下 Secrets：
+
+- `SSH_PRIVATE_KEY`: 用於連接到部署伺服器的 SSH 私鑰
+- `DEPLOY_HOST`: 部署伺服器的主機名稱或 IP 地址
+- `DEPLOY_USER`: SSH 登入用戶名
+- `DEPLOY_PATH`: 伺服器上的部署路徑 (例如: `/opt/file_indexer`)
+
+### 手動部署指南
+
+如不使用 GitHub Actions，也可以按照以下步驟手動部署：
+
+1. 使用 `rsync` 將程式碼傳輸到伺服器
+   ```bash
+   rsync -avz --exclude '.git' --exclude '__pycache__' --exclude '*.db' . user@your-server:/path/to/destination
+   ```
+
+2. 在伺服器上安裝相依套件
+   ```bash
+   cd /path/to/destination
+   pip install -r requirements.txt
+   ```
+
+3. 設定配置文件並運行
+   ```bash
+   python indexer.py
+   ```
 
 ## 提示
 
@@ -89,3 +119,4 @@ pip install requests
 ## 版本更新
 
 - 2025/04/29: 新增跨平台支援、多路徑掃描功能和智能檔案過濾
+- 2025/04/29: 新增自動部署功能

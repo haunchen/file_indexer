@@ -102,7 +102,7 @@ def upload_db(upload_url, device_id):
         except Exception as e:
             print(f"[上傳失敗] {e}")
 
-if __name__ == "__main__":
+def main():
     config = load_config()
     
     conn = sqlite3.connect(DB_FILE)
@@ -125,5 +125,15 @@ if __name__ == "__main__":
         scan_files(path, conn, exclude_dirs, exclude_extensions)
     conn.close()
     
-    # print("掃描完成，開始上傳...")
-    # upload_db(config["upload_url"], config["device_id"])
+    upload_url = config.get("upload_url")
+    device_id = config.get("device_id")
+    if upload_url and device_id:
+        print("掃描完成，開始上傳...")
+        upload_db(upload_url, device_id)
+    else:
+        print("掃描完成，未配置上傳設置")
+    
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

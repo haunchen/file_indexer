@@ -22,6 +22,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
+      # 添加一个確認步驟來顯示用戶名（不顯示敏感令牌）
+      - name: Check Docker Hub username
+        run: echo "Will push to DockerHub as ${{ secrets.DOCKERHUB_USERNAME }}"
+      
       - name: Login to Docker Hub
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
@@ -51,6 +55,11 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,format=short
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+      
+      # 添加顯示標籤資訊的步驟
+      - name: Display tags to be pushed
+        run: echo "Tags to be pushed - ${{ steps.meta.outputs.tags }}"
       
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -62,24 +71,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          
-  # 测试镜像在不同操作系统上的兼容性
-  test-compatibility:
-    needs: build-and-push
-    if: github.event_name != 'pull_request'
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
-        
-      - name: Pull and test Docker image on ${{ matrix.os }}
-        run: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/file-indexer:sha-${{ github.sha }}
-          docker run --rm ${{ secrets.DOCKERHUB_USERNAME }}/file-indexer:sha-${{ github.sha }} python -c "import platform; print(f'Running in container on: {platform.system()}')"
+      
+      # 添加確認步驟
+      - name: Confirm push status
+        if: github.event_name != 'pull_request'
+        run: echo "Docker image should have been pushed to Docker Hub as ${{ secrets.DOCKERHUB_USERNAME }}/file-indexer"

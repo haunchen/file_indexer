@@ -17,6 +17,11 @@ ENV PYTHONUNBUFFERED=1
 # 设置时区为 UTC，确保跨平台时间一致性
 ENV TZ=UTC
 
+# 安装额外的依赖以支持跨架构
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # 複製已安裝的 Python 包

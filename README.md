@@ -17,6 +17,7 @@
 - 🖥️ 跨平台支援 (Windows, macOS, Linux)
 - 📁 支援掃描多個路徑
 - 🔒 智能識別隱藏檔案和目錄
+- 🐳 提供多架構 Docker 映像 (x86/amd64, ARM64)
 
 ## 安裝需求
 
@@ -54,20 +55,44 @@ pip install requests
 
 您可以使用 Docker 容器運行此應用程式，無需安裝 Python 環境：
 
-1. 拉取 Docker 鏡像
+1. 拉取 Docker 鏡像（支援 x86/amd64 和 ARM64 架構）
    ```bash
-   docker pull haunchen/file_indexer:latest
+   docker pull haunchen/file-indexer:latest
    ```
+   
+   Docker 會自動選擇適合您系統架構的映像檔。
 
 2. 執行 Docker 容器（將本地目錄掛載到容器中以進行掃描）
+   
+   **在 Linux/macOS 系統上：**
    ```bash
-   docker run -v /path/to/scan:/data -v $(pwd):/app/output haunchen/file_indexer
+   docker run -v /path/to/scan:/data -v $(pwd):/app/output haunchen/file-indexer
+   ```
+   
+   **在 Windows 系統上 (PowerShell)：**
+   ```powershell
+   docker run -v ${PWD}\path\to\scan:/data -v ${PWD}:/app/output haunchen/file-indexer
+   ```
+   
+   **在 Windows 系統上 (Command Prompt)：**
+   ```cmd
+   docker run -v %cd%\path\to\scan:/data -v %cd%:/app/output haunchen/file-indexer
    ```
 
 3. 自行構建 Docker 鏡像
+   
+   **構建單一架構映像檔：**
    ```bash
-   docker build -t file_indexer .
-   docker run -v /path/to/scan:/data -v $(pwd):/app/output file_indexer
+   docker build -t file-indexer .
+   ```
+   
+   **構建多架構映像檔 (需要 Docker BuildX)：**
+   ```bash
+   # 建立並使用 buildx 構建器
+   docker buildx create --name multiarch-builder --use
+   
+   # 構建並推送多架構映像檔
+   docker buildx build --platform linux/amd64,linux/arm64 -t your-username/file-indexer:latest --push .
    ```
 
 ## 配置選項
@@ -130,3 +155,4 @@ pip install requests
 
 - 2025/04/29: 新增跨平台支援、多路徑掃描功能和智能檔案過濾
 - 2025/04/30: 添加 Docker 支援及 CI/CD 自動部署功能
+- 2025/04/30: 增加多架構 Docker 映像支援 (x86/amd64, ARM64)，確保在不同作業系統上的兼容性

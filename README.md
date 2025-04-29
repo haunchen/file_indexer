@@ -1,5 +1,9 @@
 # 檔案索引器 (File Indexer)
 
+![CI/CD Pipeline](https://github.com/haunchen/file_indexer/actions/workflows/ci-cd.yml/badge.svg)
+[![codecov](https://codecov.io/gh/haunchen/file_indexer/branch/main/graph/badge.svg)](https://codecov.io/gh/haunchen/file_indexer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 這個應用程式能夠掃描指定的目錄，建立檔案索引，並將結果儲存在 SQLite 資料庫中。同時支援將索引上傳到遠端伺服器。
 
 ## 功能
